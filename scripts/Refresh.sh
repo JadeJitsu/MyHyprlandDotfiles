@@ -66,4 +66,7 @@ if file_exists "${UserScripts}/RainbowBorders.sh"; then
   ${UserScripts}/RainbowBorders.sh &
 fi
 
+# Update border colors to match current wallpaper
+"$SCRIPTSDIR/UpdateBorderColors.sh" &
+
 exit 0
