@@ -1,0 +1,298 @@
+/* ---- 💫 https://github.com/LinuxBeginnings 💫 ---- */
+/* Gruvbox Dark */
+
+/* Gruvbox palette */
+@define-color gb-bg        #282828;
+@define-color gb-bg1       #3c3836;
+@define-color gb-bg2       #504945;
+@define-color gb-bg3       #665c54;
+@define-color gb-fg        #ebdbb2;
+@define-color gb-fg1       #d5c4a1;
+@define-color gb-red       #fb4934;
+@define-color gb-green     #b8bb26;
+@define-color gb-yellow    #fabd2f;
+@define-color gb-blue      #83a598;
+@define-color gb-purple    #d3869b;
+@define-color gb-aqua      #8ec07c;
+@define-color gb-orange    #fe8019;
+@define-color gb-gray      #928374;
+
+@define-color white            #F2F2F2;
+@define-color black            #000000;
+@define-color text             #ebdbb2;
+@define-color transparent      rgba(40, 40, 40, 0.55);
+
+@define-color background-module     @transparent;
+@define-color border-color          @gb-bg2;
+@define-color button-color          @gb-yellow;
+@define-color button-hover          @gb-orange;
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-weight: bold;
+    min-height: 0;
+    font-size: 99%;
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+}
+
+window#waybar {
+    background: transparent;
+    border-radius: 0px;
+    color: @gb-fg;
+    font-size: 14px;
+}
+
+window#waybar.hidden {
+    opacity: 0;
+    font-size: 14px;
+}
+
+tooltip {
+    background: @gb-bg1;
+    border-radius: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: @border-color;
+    color: @gb-fg;
+}
+
+/*-----module groups----*/
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @background-module;
+    border-radius: 15px;
+    border-bottom: 2px solid @border-color;
+    padding-top: 2px;
+    padding-bottom: 0px;
+    padding-right: 4px;
+    padding-left: 4px;
+}
+
+#workspaces {
+    padding: 0px 1px;
+    border-radius: 15px;
+    border: 2px solid @border-color;
+    font-weight: bold;
+    font-style: normal;
+    opacity: 1;
+    color: @gb-fg;
+}
+
+#taskbar button,
+#workspaces button {
+    color: @gb-fg1;
+    box-shadow: none;
+    text-shadow: none;
+    border-radius: 30px;
+    padding-left: 4px;
+    padding-right: 4px;
+    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#taskbar button.active,
+#workspaces button.active {
+    color: @gb-yellow;
+    background-color: @gb-bg1;
+    border-radius: 15px;
+    padding-left: 8px;
+    padding-right: 8px;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#workspaces button.focused {
+    color: @gb-fg;
+}
+
+#workspaces button.urgent {
+    color: @gb-red;
+    border-radius: 10px;
+}
+
+#taskbar button:hover,
+#workspaces button:hover {
+    color: @gb-yellow;
+    border-radius: 10px;
+    padding-left: 2px;
+    padding-right: 2px;
+    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#power-profiles-daemon,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-nightlight,
+#custom-browser,
+#custom-cava_mviz,
+#custom-cycle_wall,
+#custom-dot_update,
+#custom-file_manager,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-nightlight,
+#custom-lock,
+#custom-hint,
+#custom-hypridle,
+#custom-menu,
+#custom-playerctl,
+#custom-power_vertical,
+#custom-power,
+#custom-quit,
+#custom-reboot,
+#custom-settings,
+#custom-spotify,
+#custom-swaync,
+#custom-tty,
+#custom-updater,
+#custom-hyprpicker,
+#custom-weather,
+#custom-weather2,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default,
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    color: @gb-fg;
+    padding-right: 6px;
+    padding-left: 6px;
+}
+
+#temperature.critical {
+    background-color: @gb-red;
+}
+
+@keyframes blink {
+    to {
+        color: @gb-bg;
+    }
+}
+
+#backlight-slider slider,
+#pulseaudio-slider slider {
+    min-width: 0px;
+    min-height: 0px;
+    opacity: 0;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+#backlight-slider trough,
+#pulseaudio-slider trough {
+    min-width: 80px;
+    min-height: 5px;
+    border-radius: 5px;
+    background-color: @gb-bg1;
+}
+
+#backlight-slider highlight,
+#pulseaudio-slider highlight {
+    min-height: 10px;
+    border-radius: 5px;
+    background-color: @gb-orange;
+}
+
+#pulseaudio-slider,
+#pulseaudio {
+    color: @gb-orange;
+}
+
+#pulseaudio.muted {
+    color: @gb-gray;
+}
+
+#memory {
+    color: @gb-blue;
+}
+
+#cpu {
+    color: @gb-purple;
+}
+
+#battery {
+    color: @gb-yellow;
+}
+
+#disk {
+    color: @gb-aqua;
+}
+
+#battery.critical:not(.charging) {
+    color: @gb-red;
+    animation-name: blink;
+    animation-duration: 3.0s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+#custom-hypridle,
+#custom-lock,
+#idle_inhibitor {
+    color: @gb-aqua;
+    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+}
+
+#custom-hypridle.notactive,
+#idle_inhibitor.activated {
+    color: @gb-green;
+    border-bottom: 8px solid rgba(0, 0, 0, 0.2);
+}
+
+#clock#2 {
+    color: @gb-fg1;
+}
+
+#clock {
+    color: @gb-blue;
+    border-radius: 15px;
+    border: 2px solid @border-color;
+}
+
+#custom-updates {
+    color: @gb-yellow;
+}
+
+#swaync {
+    color: @gb-yellow;
+}
+
+#network {
+    color: @gb-aqua;
+}
+
+#network.disconnected {
+    color: @gb-red;
+}
+
+#mode {
+    background-color: @gb-orange;
+    color: @gb-bg;
+    font-weight: bold;
+}
