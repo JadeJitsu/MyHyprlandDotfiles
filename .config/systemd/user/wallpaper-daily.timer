@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily wallpaper rotation timer
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+Unit=wallpaper-daily.service
+
+[Install]
+WantedBy=timers.target

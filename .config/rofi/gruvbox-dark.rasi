@@ -1,0 +1,51 @@
+/* Gruvbox Dark — rofi color palette */
+/* Matches ~/.config/waybar/style/Gruvbox-Dark.css */
+
+* {
+    background-color:            #282828;
+    background:                  rgba(40,40,40,0.80);
+    foreground:                  #ebdbb2;
+    border-color:                #fabd2f;
+
+    normal-background:           #282828;
+    normal-foreground:           #ebdbb2;
+    active-background:           #fe8019;
+    active-foreground:           #282828;
+    urgent-background:           #fb4934;
+    urgent-foreground:           #282828;
+
+    alternate-normal-background: #282828;
+    alternate-normal-foreground: #ebdbb2;
+    alternate-active-background: #3c3836;
+    alternate-active-foreground: #ebdbb2;
+    alternate-urgent-background: #282828;
+    alternate-urgent-foreground: #ebdbb2;
+
+    selected-normal-background:  #fabd2f;
+    selected-normal-foreground:  #282828;
+    selected-active-background:  #fabd2f;
+    selected-active-foreground:  #282828;
+    selected-urgent-background:  #fb4934;
+    selected-urgent-foreground:  #282828;
+
+    /* color0  = alternate/panel bg  (KooL style-4: background-alt = @color0) */
+    color0:  #3c3836;
+    color1:  #504945;
+    color2:  #665c54;
+    color3:  #928374;
+    color4:  #83a598;
+    color5:  #d3869b;
+    color6:  #8ec07c;
+    color7:  #d5c4a1;
+    color8:  #282828;
+    color9:  #fb4934;
+    color10: #b8bb26;
+    /* color11 = active/border-color  (KooL style-4: active = @color11) */
+    color11: #fe8019;
+    /* color12 = selected highlight   (KooL style-4: selected = @color12) */
+    color12: #fabd2f;
+    /* color13 = urgent               (KooL style-4: urgent = @color13) */
+    color13: #fb4934;
+    color14: #83a598;
+    color15: #ebdbb2;
+}

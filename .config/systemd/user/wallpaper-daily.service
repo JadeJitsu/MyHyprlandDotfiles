@@ -1,0 +1,7 @@
+[Unit]
+Description=Daily wallpaper rotation (shuffle without repeat)
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/hypr/UserScripts/WallpaperDaily.sh
