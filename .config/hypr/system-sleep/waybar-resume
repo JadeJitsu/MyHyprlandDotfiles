@@ -1,0 +1,8 @@
+#!/bin/sh
+# Restart waybar after resume to avoid playerctl/mpris segfault on stale widget pointers
+[ "$1" = "post" ] || exit 0
+sleep 2
+uid=$(id -u jlagman)
+DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/${uid}/bus" \
+WAYLAND_DISPLAY=wayland-1 \
+  su -l jlagman -c 'pkill waybar; sleep 0.5; waybar &' &
