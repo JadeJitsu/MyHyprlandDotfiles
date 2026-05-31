@@ -82,6 +82,7 @@
 "modules-right": [
 	"hyprland/window",
 	"tray",
+	"custom/protonvpn",
 	"group/notify",
 	"mpris",
 	"keyboard-state",

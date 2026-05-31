@@ -291,6 +291,14 @@ tooltip {
     color: @gb-red;
 }
 
+#custom-protonvpn.connected {
+    color: @gb-green;
+}
+
+#custom-protonvpn.disconnected {
+    color: @gb-gray;
+}
+
 #mode {
     background-color: @gb-orange;
     color: @gb-bg;

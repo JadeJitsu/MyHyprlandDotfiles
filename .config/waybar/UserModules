@@ -7,4 +7,12 @@
 
 {
 
+"custom/protonvpn": {
+    "exec": "~/.config/hypr/UserScripts/ProtonVPN-status.sh",
+    "return-type": "json",
+    "interval": 5,
+    "format": "{}",
+    "on-click": "flatpak run com.protonvpn.www"
+},
+
 }
