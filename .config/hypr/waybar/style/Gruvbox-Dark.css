@@ -284,7 +284,7 @@ tooltip {
 }
 
 #network {
-    color: @gb-aqua;
+    color: @gb-green;
 }
 
 #network.disconnected {
