@@ -84,7 +84,7 @@
 	"tray",
 	"custom/protonvpn",
 	"group/notify",
-	"mpris",
+	//"mpris",
 	"keyboard-state",
 	"pulseaudio",
 	//"wireplumber", 
