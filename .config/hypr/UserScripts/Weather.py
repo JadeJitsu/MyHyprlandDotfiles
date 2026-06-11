@@ -75,7 +75,7 @@ ENV_PLACE = os.getenv("WEATHER_PLACE")
 # Manual place name set inside this file. If set (non-empty), this takes top priority for display
 # and, if coordinates are not provided, will be used to geocode latitude/longitude.
 # Example: MANUAL_PLACE = "Concord, NH, US"
-MANUAL_PLACE: Optional[str] = "" #Set your city HERE
+MANUAL_PLACE: Optional[str] = "Prague, CZ" #Set your city HERE
 
 # Location icon in tooltip (default to a standard emoji to avoid missing glyphs)
 LOC_ICON = os.getenv("WEATHER_LOC_ICON", "📍")
