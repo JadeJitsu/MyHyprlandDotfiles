@@ -5,6 +5,12 @@
 #  Exhausted queue is reshuffled before repeating.
 # ==================================================
 
+# Only run under Hyprland — this systemd timer fires in every session
+# (KDE, COSMIC, Hyprland alike) since it's only gated on graphical-session.target,
+# but everything below (awww-daemon, hyprctl, Refresh.sh's waybar/quickshell/
+# swaync/rainbow-borders relaunch) is Hyprland-specific.
+[[ "$XDG_CURRENT_DESKTOP" == "Hyprland" ]] || exit 0
+
 QUEUE_DIR="$HOME/.local/share/wallpaper-daily"
 QUEUE_FILE="$QUEUE_DIR/queue"
 PICTURES_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")"
