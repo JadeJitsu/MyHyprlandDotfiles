@@ -2,3 +2,4 @@
 !/.gitignore
 !/wallpaper-daily.service
 !/wallpaper-daily.timer
+!/hyprland-session.target

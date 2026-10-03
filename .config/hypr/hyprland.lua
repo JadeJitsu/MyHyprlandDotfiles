@@ -52,8 +52,9 @@ local menu        = "dms ipc call spotlight toggle" -- hyprlauncher is not insta
 hl.on("hyprland.start", function ()
   -- Make the session environment visible to systemd/dbus-activated services
   hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=Hyprland")
-  -- Start DMS directly unless a UWSM session already manages dms.service
-  hl.exec_cmd("systemctl --user is-active --quiet graphical-session.target || dms run")
+  -- Activate graphical-session.target through hyprland-session.target so dms.service autostarts;
+  -- fall back to running DMS directly if that fails.
+  hl.exec_cmd("systemctl --user start hyprland-session.target || dms run")
 end)
 
 
@@ -93,8 +94,8 @@ hl.env("HYPRCURSOR_SIZE", "24")
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
     general = {
-        gaps_in  = 5,
-        gaps_out = 20,
+        gaps_in  = 8,
+        gaps_out = 8,
 
         border_size = 2,
 
@@ -362,6 +363,10 @@ hl.bind(mainMod .. " + CTRL + F12",     hl.dsp.workspace.move({ monitor = "d" })
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+-- Screenshots (saved to file and copied to clipboard)
+hl.bind("Print",                 hl.dsp.exec_cmd("dms screenshot full"))
+hl.bind(mainMod .. " + Print",   hl.dsp.exec_cmd("dms screenshot region"))
 
 -- Laptop multimedia keys for volume and LCD brightness
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
