@@ -94,9 +94,7 @@ hl.env("HYPRCURSOR_SIZE", "24")
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
     general = {
-        gaps_in  = 8,
-        gaps_out = 8,
-
+        -- gaps_in/gaps_out come from dms/layout.lua (required below)
         border_size = 2,
 
         col = {
@@ -143,6 +141,8 @@ hl.config({
 
 -- DMS-generated border colors (Matugen)
 require("dms.colors")
+-- DMS-generated layout: gaps, border size, rounding
+require("dms.layout")
 
 -- Default curves and animations, see https://wiki.hypr.land/Configuring/Advanced-and-Cool/Animations/
 hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1}    } })
