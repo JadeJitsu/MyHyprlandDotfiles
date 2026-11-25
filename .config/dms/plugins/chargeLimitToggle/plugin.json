@@ -1,0 +1,16 @@
+{
+  "id": "chargeLimitToggle",
+  "name": "Charge Limit Toggle",
+  "description": "TUXEDO battery charge-end limit via tccd. Shows the current threshold; click to toggle between 80% and 100%.",
+  "version": "0.1.0",
+  "author": "jlagman",
+  "type": "widget",
+  "icon": "battery",
+  "component": "./ChargeLimitWidget.qml",
+  "capabilities": [
+    "dankbar-widget"
+  ],
+  "permissions": [
+    "settings_read"
+  ]
+}

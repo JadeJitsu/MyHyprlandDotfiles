@@ -30,6 +30,17 @@ hl.monitor({
 })
 
 
+-----------------
+---- INPUT ----
+-----------------
+
+hl.config({
+    input = {
+        numlock_by_default = true,
+    },
+})
+
+
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
@@ -51,10 +62,43 @@ local menu        = "dms ipc call spotlight toggle" -- hyprlauncher is not insta
 --
 hl.on("hyprland.start", function ()
   -- Make the session environment visible to systemd/dbus-activated services
-  hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=Hyprland")
+  hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=Hyprland XDG_SESSION_TYPE=wayland SAL_USE_VCLPLUGIN=qt6 QT_QPA_PLATFORM=wayland QT_QPA_PLATFORMTHEME=qt6ct")
   -- Activate graphical-session.target through hyprland-session.target so dms.service autostarts;
   -- fall back to running DMS directly if that fails.
   hl.exec_cmd("systemctl --user start hyprland-session.target || dms run")
+  -- Proton Mail Bridge (flatpak), tray only
+  hl.exec_cmd("flatpak run ch.protonmail.protonmail-bridge --no-window")
+  -- Proton VPN (native v6 source build in ~/Projects/protonvpn-native)
+  hl.exec_cmd("~/Projects/protonvpn-native/venv/bin/protonvpn-app --start-minimized >/dev/null 2>&1")
+  -- Koofr sync client, tray only (XDG autostart entry isn't honored by Hyprland).
+  -- Wait for org.kde.StatusNotifierWatcher (provided by DMS) before launching:
+  -- Go systray registers once at startup and does not retry, so starting in
+  -- the same second as the session (observed 2026-11-25) leaves a
+  -- running-but-unregistered instance with no tray icon. Same pattern as the
+  -- TCC tray line below (AI-generated fix, 2026-11-25).
+  hl.exec_cmd("(for i in $(seq 60); do busctl --user list 2>/dev/null | grep -q '^org.kde.StatusNotifierWatcher' && break; sleep 1; done; ~/.koofr-dist/storagegui >/dev/null 2>&1 &)")
+  -- EasyEffects (native build in /usr/local, see ~/Projects/easyeffects-src),
+  -- tray only (-w hides the window). Same wait-for-watcher guard as koofr;
+  -- drop -w if you want the window on login. AI-generated 2026-11-25.
+  hl.exec_cmd("(for i in $(seq 60); do busctl --user list 2>/dev/null | grep -q '^org.kde.StatusNotifierWatcher' && break; sleep 1; done; /usr/local/bin/easyeffects -w >/dev/null 2>&1 &)")
+  -- Watchdog: exit Vivaldi cleanly when this session ends, so SDDM session
+  -- switches don't SIGKILL it mid-write and corrupt the profile ("data loss"
+  -- + lost vivaldi.net sign-in). AI-generated 2026-11-24, tested with
+  -- /tmp/session-guard-test/test-guard.sh; log in ~/.local/state/.
+  hl.exec_cmd("~/.local/bin/vivaldi-session-guard.sh >/dev/null 2>&1 &")
+  -- TUXEDO Control Center tray (XDG autostart entry isn't honored by Hyprland);
+  -- the tccd daemon itself autostarts via systemd, this just starts the tray UI.
+  -- Wait for org.kde.StatusNotifierWatcher (provided by DMS) before launching:
+  -- Electron creates its tray once at startup and does not retry if no watcher
+  -- is present yet, so starting too early leaves a running-but-unregistered
+  -- instance that blocks all later launches (AI-generated fix, 2026-11-23).
+  hl.exec_cmd("(for i in $(seq 60); do busctl --user list 2>/dev/null | grep -q '^org.kde.StatusNotifierWatcher' && break; sleep 1; done; /opt/tuxedo-control-center/tuxedo-control-center --tray >/dev/null 2>&1 &)")
+  -- Unlock KDE Wallet so Electron apps (Signal) can use the kwallet6 safeStorage backend
+  hl.exec_cmd("~/.config/hypr/scripts/unlock-kwallet.sh")
+  -- NetworkManager OTP agent: pops a terminal window for the corporate VPN's
+  -- per-connection OTP code (no NM UI exists in Hyprland). AI-generated
+  -- 2026-11-20, see ~/Projects/scripts/nm-vpn-otp-agent/README.md
+  hl.exec_cmd("nm-otp-agent >/dev/null 2>&1 &")
 end)
 
 
@@ -67,6 +111,10 @@ end)
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("XDG_MENU_PREFIX", "plasma-") -- Dolphin "Open with" menus (silences dms doctor warning)
+hl.env("XDG_SESSION_TYPE", "wayland") -- lets Electron/Qt auto-pick Wayland for apps started from DMS
+hl.env("SAL_USE_VCLPLUGIN", "qt6") -- LibreOffice defaults to the X11-only "gen" VCL plugin otherwise, causing fuzzy rendering at 1.25 scale
+hl.env("QT_QPA_PLATFORM", "wayland") -- makes the qt6 VCL plugin render natively instead of via XWayland
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct") -- applies qt6ct's matugen color scheme so Qt apps match the DMS Material theme
 
 
 -----------------------
@@ -144,6 +192,8 @@ hl.config({
 require("dms.colors")
 -- DMS-generated layout: gaps, border size, rounding
 require("dms.layout")
+-- DMS-managed window rules (floating DMS windows)
+require("dms.windowrules")
 
 -- Default curves and animations, see https://wiki.hypr.land/Configuring/Advanced-and-Cool/Animations/
 hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1}    } })
@@ -241,7 +291,7 @@ hl.config({
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
         touchpad = {
-            natural_scroll = false,
+            natural_scroll = true,
         },
     },
 })
@@ -250,6 +300,17 @@ hl.gesture({
     fingers = 3,
     direction = "horizontal",
     action = "workspace"
+})
+
+-- Touchpad on/off state lives in a flag file (see scripts/touchpad-toggle.sh). Declaring `enabled`
+-- explicitly matters: a reload only reapplies device settings the config sets, so without this a
+-- runtime-disabled touchpad stays disabled.
+local tpDisabledFlag = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/touchpad-disabled"
+local tpFlag = io.open(tpDisabledFlag, "r")
+if tpFlag then tpFlag:close() end
+hl.device({
+    name    = "elan0676:00-04f3:3195-touchpad",
+    enabled = (tpFlag == nil),
 })
 
 -- Example per-device config
@@ -354,6 +415,11 @@ hl.bind(mainMod .. " + period",         hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + comma",          hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + mouse_down",     hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up",       hl.dsp.focus({ workspace = "e-1" }))
+-- Activities (KDE-style context switching): Super+W toggles between the
+-- "work" (ws 1-4) and "personal" (ws 5-8) workspace groups.
+-- See scripts/activity-switch.sh for the activity definitions.
+hl.bind(mainMod .. " + W",              hl.dsp.exec_cmd("~/.config/hypr/scripts/activity-switch.sh next"))
+
 hl.bind(mainMod .. " + U",              hl.dsp.workspace.toggle_special("special"))
 hl.bind(mainMod .. " + SHIFT + U",      hl.dsp.window.move({ workspace = "special:special" }))
 hl.bind(mainMod .. " + CTRL + F9",      hl.dsp.workspace.move({ monitor = "l" }))
@@ -379,6 +445,12 @@ hl.bind("XF86Sleep",            hl.dsp.exec_cmd("systemctl suspend"),           
 hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                  { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                  { locked = true, repeating = true })
+
+-- Touchpad on/off (TUXEDO's own touchpad switch doesn't support Hyprland)
+hl.bind("XF86TouchpadToggle", hl.dsp.exec_cmd("~/.config/hypr/scripts/touchpad-toggle.sh"),     { locked = true })
+hl.bind("XF86TouchpadOn",     hl.dsp.exec_cmd("~/.config/hypr/scripts/touchpad-toggle.sh on"),  { locked = true })
+hl.bind("XF86TouchpadOff",    hl.dsp.exec_cmd("~/.config/hypr/scripts/touchpad-toggle.sh off"), { locked = true })
+hl.bind(mainMod .. " + F10",  hl.dsp.exec_cmd("~/.config/hypr/scripts/touchpad-toggle.sh"))
 
 -- Requires playerctl
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })

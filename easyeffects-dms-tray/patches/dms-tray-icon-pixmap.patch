@@ -1,0 +1,38 @@
+Subject: tray: load icon from installed PNG so DMS gets an IconPixmap
+
+DMS (Dux Modular Shell) fails to resolve the SystemTrayIcon theme name
+("WARN quickshell.service.sni.item: Unable to create pixmap for tray
+icon") even though the icon exists in /usr/local/share/icons/hicolor
+(with index.theme) and ~/.local/share/icons/hicolor. It renders items
+that provide IconPixmap (e.g. Joplin) or a file-path IconName (e.g.
+ProtonVPN) fine.
+
+Setting icon.source to a bare absolute SVG path exported an EMPTY
+IconPixmap array (no image-load logs at all — the QML icon loader did
+not pick it up). Using an explicit file:// URL to a pre-rendered PNG
+makes Qt export a real IconPixmap, which DMS renders.
+
+PNGs are 48x48 renders of the symbolic SVGs (white on transparent,
+matching the dark DMS tray); they must be installed alongside this
+patch (see update.sh / installed-files.txt).
+
+AI-generated local patch, 2026-11-25 (Claude Code). Drop when DMS gains
+proper theme-name resolution or the distro package works under DMS.
+
+--- a/src/contents/ui/TrayIcon.qml
++++ b/src/contents/ui/TrayIcon.qml
+@@ -30,9 +30,13 @@
+     property Main mainWindow: null
+
+     readonly property string iconName: DbMain.bypass ? applicationId + "-off-symbolic" : applicationId + "-symbolic"
+
++    // Local patch (2026-11-25): DMS cannot resolve the theme name above,
++    // so load the installed PNG directly; Qt then exports an IconPixmap.
++    readonly property string iconSource: "file:///usr/local/share/icons/hicolor/scalable/apps/" + iconName + ".png"
++
+     visible: DbMain.showTrayIcon && canUseSysTray
+-    icon.name: iconName
++    icon.source: iconSource
+     tooltip: applicationName
+
+     onActivated: {

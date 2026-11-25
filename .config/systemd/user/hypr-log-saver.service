@@ -1,0 +1,11 @@
+[Unit]
+Description=Mirror Hyprland logs from tmpfs to ~/hypr-logs (survives reboot)
+After=graphical-session-pre.target
+
+[Service]
+Type=simple
+ExecStart=/home/jlagman/.config/hypr/scripts/hypr-log-saver.sh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

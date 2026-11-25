@@ -1,0 +1,9 @@
+{
+  "lockfileVersion": 1,
+  "plugins": {
+    "intervalCommand": {
+      "repo": "https://github.com/corcoran/dms-interval-command",
+      "commit": "6d071ad7795a0fbf5304cc760ef98083780fd1f5"
+    }
+  }
+}

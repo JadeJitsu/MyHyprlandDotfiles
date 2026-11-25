@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# Fake hyprctl for testing activity-switch.sh.
+# Simulates a single focused monitor with per-monitor workspaces.
+# State: JSON file at $FAKE_HYPRLAND_STATE. Every dispatch is appended to $FAKE_HYPRLAND_LOG.
+set -euo pipefail
+
+STATE="${FAKE_HYPRLAND_STATE:?FAKE_HYPRLAND_STATE not set}"
+LOG="${FAKE_HYPRLAND_LOG:-/dev/null}"
+
+rest=()
+for a in "$@"; do
+    [[ $a != "-j" ]] && rest+=("$a")
+done
+cmd="${rest[0]:-}"
+args=("${rest[@]:1}")
+
+case "$cmd" in
+    monitors)
+        jq '.monitors' "$STATE"
+        ;;
+    workspaces)
+        jq '[.workspaces[] | {id, name, monitor, windows: (.window_ids | length)}]' "$STATE"
+        ;;
+    clients)
+        # Modern Hyprland renamed "windows" to "clients".
+        # Like real Hyprland, clients carry the monitor's numeric id, not its name.
+        jq '. as $s
+            | [.windows[] | . as $w
+               | ($s.workspaces | map(select(.id == $w.workspace.id)) | .[0].monitor) as $wmon
+               | ($s.monitors | map(select(.name == $wmon)) | .[0].id) as $mid
+               | {id, class, title, monitor: $mid, workspace: {id: .workspace.id, name: .workspace.name}}]' "$STATE"
+        ;;
+    activeworkspace)
+        jq --argjson id "$(jq '.active_workspace_id' "$STATE")" \
+           '[.workspaces[] | select(.id == $id)] | if length > 0 then .[0] else null end' "$STATE"
+        ;;
+    eval)
+        # Modern Hyprland: dispatches go through the Lua API, e.g.
+        #   hyprctl eval 'hl.dispatch(hl.dsp.focus({ workspace = 5 }))'
+        #   hyprctl eval 'hl.dispatch(hl.dsp.window.move({ workspace = 5 }))'
+        echo "eval ${args[*]}" >> "$LOG"
+        code="${args[0]}"
+        if [[ "$code" =~ hl\.dsp\.focus\(\{\ workspace\ =\ ([0-9]+)\ \}\) ]]; then
+            # Focus (and create if needed) workspace N on the focused monitor.
+            jq --arg n "${BASH_REMATCH[1]}" '
+                . as $s
+                | ($s.monitors | map(select(.focused)) | .[0].name) as $mon
+                | ($s.workspaces | map(select(.name == $n and .monitor == $mon))) as $m
+                | if ($m | length) > 0 then
+                    .active_workspace_id = $m[0].id
+                    | .active_window_id = (if ($m[0].window_ids | length) > 0 then $m[0].window_ids[0] else null end)
+                  else
+                    .workspaces += [{id: $s.next_ws_id, name: $n, monitor: $mon, window_ids: []}]
+                    | .next_ws_id += 1
+                    | .active_workspace_id = ($s.next_ws_id - 1)
+                    | .active_window_id = null
+                  end
+            ' "$STATE" > "$STATE.tmp" && mv "$STATE.tmp" "$STATE"
+        elif [[ "$code" =~ hl\.dsp\.window\.move\(\{\ workspace\ =\ ([0-9]+)\ \}\) ]]; then
+            # Move the active window to workspace N on the focused monitor.
+            jq --arg n "${BASH_REMATCH[1]}" '
+                . as $s
+                | ($s.monitors | map(select(.focused)) | .[0].name) as $mon
+                | ($s.workspaces | map(select(.name == $n and .monitor == $mon)) | .[0]) as $dst
+                | ($s.windows | map(select(.id == $s.active_window_id)) | .[0]) as $win
+                | if ($dst == null) or ($win == null) then . else
+                    ($s.workspaces | map(select(.id == $win.workspace.id)) | .[0]) as $src
+                    | .workspaces = ($s.workspaces | map(
+                        if .id == $src.id then .window_ids |= map(select(. != $win.id))
+                        elif .id == $dst.id then .window_ids += [$win.id]
+                        else . end))
+                    | .windows = ($s.windows | map(
+                        if .id == $win.id then .workspace = {id: $dst.id, name: $dst.name}
+                        else . end))
+                    | .active_window_id = $win.id
+                    | .active_workspace_id = $dst.id
+                  end
+            ' "$STATE" > "$STATE.tmp" && mv "$STATE.tmp" "$STATE"
+        else
+            echo "fake hyprctl: unhandled eval: $code" >&2; exit 1
+        fi
+        ;;
+    *)
+        echo "fake hyprctl: unhandled command: $cmd" >&2; exit 1
+        ;;
+esac

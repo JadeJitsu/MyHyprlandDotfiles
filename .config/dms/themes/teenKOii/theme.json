@@ -1,0 +1,131 @@
+{
+  "id": "teenKOii",
+  "name": "teenKOii",
+  "version": "1.0.0",
+  "author": "antikytheraton",
+  "description": "Theme inspired by Teenage Engineering K.O. II",
+  "dark": {
+    "primary": "#C84800",
+    "primaryText": "#FFFFFF",
+    "primaryContainer": "#8A3000",
+    "secondary": "#A83000",
+    "surface": "#5A5A58",
+    "surfaceText": "#F0F0EE",
+    "surfaceVariant": "#4E4E4C",
+    "surfaceVariantText": "#E0E0DE",
+    "surfaceTint": "#C84800",
+    "background": "#686866",
+    "backgroundText": "#F0F0EE",
+    "outline": "#3E3E3C",
+    "surfaceContainer": "#606060",
+    "surfaceContainerHigh": "#565654",
+    "surfaceContainerHighest": "#4A4A48",
+    "error": "#A83000",
+    "warning": "#C84800",
+    "info": "#C8C8C6"
+  },
+  "light": {
+    "primary": "#E8541A",
+    "primaryText": "#FFFFFF",
+    "primaryContainer": "#A83800",
+    "secondary": "#CC2200",
+    "surface": "#C8C8C6",
+    "surfaceText": "#1E1E1E",
+    "surfaceVariant": "#B8B8B6",
+    "surfaceVariantText": "#2A2A28",
+    "surfaceTint": "#E8541A",
+    "background": "#DCDCDA",
+    "backgroundText": "#1E1E1E",
+    "outline": "#8A8A88",
+    "surfaceContainer": "#D4D4D2",
+    "surfaceContainerHigh": "#CACAC8",
+    "surfaceContainerHighest": "#BEBEBC",
+    "error": "#CC2200",
+    "warning": "#FF7A3D",
+    "info": "#6A6A68"
+  },
+  "wcag": {
+    "level": "fail",
+    "dark": {
+      "level": "fail",
+      "minRatio": 1.31,
+      "worstPair": [
+        "primary",
+        "surfaceContainer"
+      ],
+      "body": {
+        "level": "AA",
+        "minRatio": 4.76,
+        "worstPair": [
+          "surfaceVariantText",
+          "surfaceContainer"
+        ]
+      },
+      "accent": {
+        "level": "fail",
+        "minRatio": 1.31,
+        "worstPair": [
+          "primary",
+          "surfaceContainer"
+        ]
+      },
+      "nonText": {
+        "level": "fail",
+        "minRatio": 1.08,
+        "worstPair": [
+          "error",
+          "surfaceContainer"
+        ]
+      },
+      "breakdown": [
+        {
+          "name": "Dark",
+          "mode": "dark",
+          "level": "fail",
+          "bodyLevel": "AA"
+        }
+      ]
+    },
+    "light": {
+      "level": "fail",
+      "minRatio": 2.48,
+      "worstPair": [
+        "primary",
+        "surfaceContainer"
+      ],
+      "body": {
+        "level": "AAA",
+        "minRatio": 8.58,
+        "worstPair": [
+          "surfaceVariantText",
+          "surface"
+        ]
+      },
+      "accent": {
+        "level": "fail",
+        "minRatio": 2.48,
+        "worstPair": [
+          "primary",
+          "surfaceContainer"
+        ]
+      },
+      "nonText": {
+        "level": "fail",
+        "minRatio": 1.75,
+        "worstPair": [
+          "warning",
+          "surfaceContainer"
+        ]
+      },
+      "breakdown": [
+        {
+          "name": "Light",
+          "mode": "light",
+          "level": "fail",
+          "bodyLevel": "AAA"
+        }
+      ]
+    }
+  },
+  "sourceDir": "teenKOII"
+}

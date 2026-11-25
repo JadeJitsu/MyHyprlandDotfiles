@@ -1,4 +1,7 @@
 /*
 !/.gitignore
+!/README.md
 !/.config
+!/.local
 !/.zshrc
+!/easyeffects-dms-tray

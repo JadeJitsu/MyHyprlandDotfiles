@@ -1,0 +1,17 @@
+{
+  "intervalCommand": {
+    "enabled": true,
+    "variants": [
+      {
+        "id": "variant_1793271449754",
+        "name": "Activities",
+        "command": "~/.config/hypr/scripts/activity-status.sh",
+        "icon": "work",
+        "useAccentColor": true,
+        "popoutEnabled": true,
+        "popoutRefreshInterval": 2,
+        "clickCommand": "~/.config/hypr/scripts/activity-switch.sh next"
+      }
+    ]
+  }
+}

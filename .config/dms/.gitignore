@@ -1,0 +1,6 @@
+*.bak*
+.changelog*
+.firstlaunch
+plugins/.repos/
+# third-party plugin, pinned in plugins.lock.json (re-clone on restore, see README)
+plugins/intervalCommand/

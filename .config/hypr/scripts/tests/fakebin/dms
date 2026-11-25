@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Fake dms for tests: swallow notifications so tests don't pop real ones.
+exit 0

@@ -1,6 +1,7 @@
 /*
-!/hypr
-!/rofi
-!/systemd
-!/waybar
 !/.gitignore
+!/hypr
+!/dms
+!/autostart
+!/systemd
+!/qt6ct

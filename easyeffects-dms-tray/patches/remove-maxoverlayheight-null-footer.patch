@@ -1,0 +1,33 @@
+From 350384f8aef2e2f18ff7fedd07ceb66acdfb4f99 Mon Sep 17 00:00:00 2001
+From: Andrew Fader <fader@yagni.co>
+Date: Fri, 6 Nov 2026 00:24:44 -0500
+Subject: [PATCH] ui: remove maxOverlayHeight binding that dereferences a null
+ footer
+
+Main.qml no longer sets a footer (overlays are used instead, see the comment
+near the end of the file), so the binding
+
+    readonly property real maxOverlayHeight: height - header.height - footer.height
+
+throws on every start:
+
+    qrc:/qt/qml/ee/ui/contents/ui/Main.qml:34: TypeError: Cannot read property 'height' of null
+
+Nothing reads the property any more, so drop it rather than guard it.
+---
+ src/contents/ui/Main.qml | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/contents/ui/Main.qml b/src/contents/ui/Main.qml
+index 67f0bf34b..4ad95522d 100644
+--- a/src/contents/ui/Main.qml
++++ b/src/contents/ui/Main.qml
+@@ -31,8 +31,6 @@ Kirigami.ApplicationWindow {
+     required property string applicationId
+     required property bool canUseSysTray
+ 
+-    readonly property real maxOverlayHeight: height - header.height - footer.height
+-
+     // We need to set visible to false in order to fix an issue related to
+     // --hide-window option. See #4491.
+     visible: false

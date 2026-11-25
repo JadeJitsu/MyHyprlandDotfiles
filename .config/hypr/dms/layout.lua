@@ -9,10 +9,22 @@ hl.config({
 	},
 	decoration = {
 		rounding = 12,
+		blur = {
+			passes = 2,
+		},
 	},
 })
 
+-- Hand-written or migrated hyprland.lua often lacks these; Hyprland would tween every DMS layer move.
+hl.layer_rule({ match = { namespace = "^(quickshell)$" }, no_anim = true })
+hl.layer_rule({ match = { namespace = "^dms:.*" }, no_anim = true })
+
 hl.layer_rule({
 	match = { namespace = "^dms:bar$" },
+	xray = true,
+})
+
+hl.layer_rule({
+	match = { namespace = "^dms:dankisland$" },
 	xray = true,
 })
