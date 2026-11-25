@@ -6,7 +6,7 @@ Restore source for **T14s-TuxOs** (ThinkPad T14s, user `jlagman`) running
 
 This tree **replaces the legacy conf-based layout** (UserConfigs/, animations/,
 waybar/, rofi/) that lived in earlier commits — the last conf-era state is
-preserved at commit `abb03e9` if you ever need it back.
+preserved at commit `ab6bc30` if you ever need it back.
 
 > Parts of this tree were AI-generated (Claude Code, 2026-11-25) and are
 > flagged as such below. Per SUSE IT policy they require human review before
@@ -29,6 +29,7 @@ preserved at commit `abb03e9` if you ever need it back.
 | `.config/autostart/` | `~/.config/autostart/` | koofr + Nextcloud desktop entries (note: Hyprland does NOT run these — see systray section; kept for non-Hyprland sessions) |
 | `.config/systemd/user/` | `~/.config/systemd/user/` | `dms.service` (+ `dms.service.d/hyprland-only.conf` drop-in), `hypr-log-saver.service` |
 | `.config/qt6ct/` | `~/.config/qt6ct/` | Qt/KDE app theming so Qt apps match the DMS theme under Hyprland (custom palette via matugen + tuxedo-breeze-dark icons) |
+| `.config/nvim/` | `~/.config/nvim/` | Neovim config from [josean-dev/dev-environment-files](https://github.com/josean-dev/dev-environment-files) + **Avante.nvim** AI plugin (`lua/josean/plugins/ai.lua`) wired to local Ollama |
 | `.local/share/flatpak/overrides/` | `~/.local/share/flatpak/overrides/` | Flatpak session-bus policies — **Joplin's StatusNotifierWatcher talk-name is a required systray fix** |
 | `easyeffects-dms-tray/` | (build inputs for `~/Projects/easyeffects-src`) | EasyEffects DMS tray-icon fix: patches, PNG renders, render script |
 | `.zshrc` | `~/.zshrc` | Shell config |
@@ -40,7 +41,7 @@ preserved at commit `abb03e9` if you ever need it back.
 2. **Packages** (minimum the configs reference):
    ```
    sudo apt-get install hyprland hyprlock swww wl-clipboard ghostty \
-     flatpak glab gh python3-gi librsvg2-bin cmake ninja-build git
+     flatpak glab gh python3-gi librsvg2-bin cmake ninja-build git nvim
    ```
    plus the Qt6 build deps needed by the EasyEffects native build (see
    `easyeffects-dms-tray/README.md`).
@@ -71,7 +72,14 @@ preserved at commit `abb03e9` if you ever need it back.
 7. **EasyEffects**: native build required (distro 8.3.2 has a fatal QML bug) —
    follow `easyeffects-dms-tray/README.md`. The autostart line in
    `hyprland.lua` expects `/usr/local/bin/easyeffects`.
-8. **Log out/in**, then re-establish accounts/auth (not restorable from files):
+8. **Neovim**: nothing to do at copy time — `init.lua` bootstraps lazy.nvim
+   and installs all plugins on first launch (`nvim --headless "+Lazy! sync" +qa`
+   does it non-interactively). **Avante** (the AI plugin) defaults to
+   `ollama/qwen3-coder:30b-32k` at `http://localhost:11434`; the in-chat model
+   picker lists every Ollama model, so `gpt-oss:20b-32k` is switchable without
+   reconfiguration. Customization lives in `lua/josean/plugins/ai.lua` and is
+   also committed to the `JadeJitsu/dev-environment-files` fork.
+9. **Log out/in**, then re-establish accounts/auth (not restorable from files):
    `glab auth login`, `gh auth login`, Nextcloud account, Koofr app data
    (`~/.koofr-dist`), Signal (fresh instance + phone link), KWallet password
    (the old wallet was empty anyway).
@@ -152,5 +160,7 @@ icon) installed to `/usr/local`, managed by `~/Projects/easyeffects-src/update.s
   - `hyprland.lua`: koofr wait-for-watcher line, EasyEffects autostart line
   - `settings.json`: `batteryNotifyChargeLimit: false`
   - everything under `easyeffects-dms-tray/` (patches, `render.py`, PNGs)
+  - `.config/nvim/lua/josean/plugins/ai.lua` (Avante spec; rest of the nvim
+    tree is verbatim from josean-dev/dev-environment-files)
   - this README
 - Everything else is the live system state copied verbatim on 2026-11-25.
